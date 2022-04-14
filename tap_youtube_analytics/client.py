@@ -107,6 +107,7 @@ ERROR_CODE_EXCEPTION_MAPPING = {
 def get_exception_for_error_code(error_code):
     return ERROR_CODE_EXCEPTION_MAPPING.get(error_code, GoogleError)
 
+
 def raise_for_error(response):
     try:
         response.raise_for_status()
@@ -129,6 +130,7 @@ def raise_for_error(response):
         except (ValueError, TypeError):
             raise GoogleError(error)
 
+
 # Pagination loop for API calls to yield records
 def get_paginated_data(client, url, path, endpoint, params, data_key='items'):
     total_count = 0
@@ -150,7 +152,6 @@ def get_paginated_data(client, url, path, endpoint, params, data_key='items'):
             path,
             '?{}'.format(querystring) if querystring else ''))
 
-        data = {}
         data = client.get(
             url=url,
             path=path,
@@ -187,7 +188,8 @@ def get_paginated_data(client, url, path, endpoint, params, data_key='items'):
             is_next_page = False
         page = page + 1
 
-class GoogleClient: # pylint: disable=too-many-instance-attributes
+
+class GoogleClient:
     def __init__(self,
                  client_id,
                  client_secret,
@@ -201,7 +203,6 @@ class GoogleClient: # pylint: disable=too-many-instance-attributes
         self.__expires = None
         self.__session = requests.Session()
         self.base_url = None
-
 
     def __enter__(self):
         self.get_access_token()
@@ -244,7 +245,6 @@ class GoogleClient: # pylint: disable=too-many-instance-attributes
         self.__access_token = data['access_token']
         self.__expires = datetime.utcnow() + timedelta(seconds=data['expires_in'])
         LOGGER.info('Authorized, token expires = {}'.format(self.__expires))
-
 
     @backoff.on_exception(backoff.expo,
                           (Server5xxError, ConnectionError, Server429Error),
@@ -295,8 +295,8 @@ class GoogleClient: # pylint: disable=too-many-instance-attributes
         if response.status_code >= 500:
             raise Server5xxError()
 
-        #Use retry functionality in backoff to wait and retry if
-        #response code equals 429 because rate limit has been exceeded
+        # Use retry functionality in backoff to wait and retry if
+        # response code equals 429 because rate limit has been exceeded
         if response.status_code == 429:
             raise Server429Error()
 
@@ -336,8 +336,8 @@ class GoogleClient: # pylint: disable=too-many-instance-attributes
                     if response.status_code >= 500:
                         raise Server5xxError()
 
-                    #Use retry functionality in backoff to wait and retry if
-                    #response code equals 429 because rate limit has been exceeded
+                    # Use retry functionality in backoff to wait and retry if
+                    # response code equals 429 because rate limit has been exceeded
                     if response.status_code == 429:
                         raise Server429Error()
 

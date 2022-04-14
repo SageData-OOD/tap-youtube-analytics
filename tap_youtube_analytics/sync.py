@@ -16,6 +16,7 @@ DATA_URL = 'https://www.googleapis.com/youtube/v3'
 ATTRIBUTION_DAYS = 7
 DATE_WINDOW_SIZE = 30
 
+
 def write_schema(catalog, stream_name):
     stream = catalog.get_stream(stream_name)
     schema = stream.schema.to_dict()
@@ -44,8 +45,8 @@ def get_bookmark(state, stream, default):
         return default
     return (
         state
-        .get('bookmarks', {})
-        .get(stream, default)
+            .get('bookmarks', {})
+            .get(stream, default)
     )
 
 
@@ -57,7 +58,6 @@ def write_bookmark(state, stream, value):
     singer.write_state(state)
 
 
-#pylint: disable=protected-access
 def transform_datetime(this_dttm):
     with Transformer() as transformer:
         new_dttm = transformer._transform_datetime(this_dttm)
@@ -77,7 +77,6 @@ def sync_channels(client,
                   catalog,
                   channel_ids,
                   endpoint_config):
-
     stream_name = 'channels'
     stream = catalog.get_stream(stream_name)
     schema = stream.schema.to_dict()
@@ -99,23 +98,24 @@ def sync_channels(client,
 
     with metrics.record_counter(stream_name) as counter:
         for record in records:
-            for key in id_fields:
-                if not record.get(key):
-                    raise ValueError('Stream: {}, Missing key: {}'.format(stream_name, key))
+            if record:
+                for key in id_fields:
+                    if not record.get(key):
+                        raise ValueError('Stream: {}, Missing key: {}'.format(stream_name, key))
 
-            with Transformer() as transformer:
-                try:
-                    transformed_record = transformer.transform(
-                        transform_data_record(record),
-                        schema,
-                        stream_metadata)
-                except Exception as err:
-                    LOGGER.error('Transformer Error: %s', err)
-                    LOGGER.error('Stream: %s, record: %s', stream_name, record)
-                    raise err
+                with Transformer() as transformer:
+                    try:
+                        transformed_record = transformer.transform(
+                            transform_data_record(record),
+                            schema,
+                            stream_metadata)
+                    except Exception as err:
+                        LOGGER.error('Transformer Error: %s', err)
+                        LOGGER.error('Stream: %s, record: %s', stream_name, record)
+                        raise err
 
-                write_record(stream_name, transformed_record, time_extracted=time_extracted)
-                counter.increment()
+                    write_record(stream_name, transformed_record, time_extracted=time_extracted)
+                    counter.increment()
 
         LOGGER.info('Stream: {}, Processed {} records'.format(stream_name, counter.value))
         return counter.value
@@ -125,7 +125,6 @@ def sync_playlists(client,
                    catalog,
                    channel_ids,
                    endpoint_config):
-
     stream_name = 'playlists'
     stream = catalog.get_stream(stream_name)
     schema = stream.schema.to_dict()
@@ -150,23 +149,24 @@ def sync_playlists(client,
             time_extracted = utils.now()
 
             for record in records:
-                for key in id_fields:
-                    if not record.get(key):
-                        raise ValueError('Stream: {}, Missing key: {}'.format(stream_name, key))
+                if record:
+                    for key in id_fields:
+                        if not record.get(key):
+                            raise ValueError('Stream: {}, Missing key: {}'.format(stream_name, key))
 
-                with Transformer() as transformer:
-                    try:
-                        transformed_record = transformer.transform(
-                            transform_data_record(record),
-                            schema,
-                            stream_metadata)
-                    except Exception as err:
-                        LOGGER.error('Transformer Error: %s', err)
-                        LOGGER.error('Stream: %s, record: %s', stream_name, record)
-                        raise err
+                    with Transformer() as transformer:
+                        try:
+                            transformed_record = transformer.transform(
+                                transform_data_record(record),
+                                schema,
+                                stream_metadata)
+                        except Exception as err:
+                            LOGGER.error('Transformer Error: %s', err)
+                            LOGGER.error('Stream: %s, record: %s', stream_name, record)
+                            raise err
 
-                    write_record(stream_name, transformed_record, time_extracted=time_extracted)
-                    counter.increment()
+                        write_record(stream_name, transformed_record, time_extracted=time_extracted)
+                        counter.increment()
 
         LOGGER.info('Stream: {}, Processed {} records'.format(stream_name, counter.value))
         return counter.value
@@ -178,7 +178,6 @@ def sync_playlist_items(client,
                         start_date,
                         channel_ids,
                         endpoint_config):
-
     stream_name = 'playlist_items'
     stream = catalog.get_stream(stream_name)
     schema = stream.schema.to_dict()
@@ -223,33 +222,34 @@ def sync_playlist_items(client,
                 time_extracted = utils.now()
 
                 for record in records:
-                    for key in id_fields:
-                        if not record.get(key):
-                            raise ValueError('Stream: {}, Missing key: {}'.format(stream_name, key))
+                    if record:
+                        for key in id_fields:
+                            if not record.get(key):
+                                raise ValueError('Stream: {}, Missing key: {}'.format(stream_name, key))
 
-                    with Transformer() as transformer:
-                        try:
-                            transformed_record = transformer.transform(
-                                transform_data_record(record),
-                                schema,
-                                stream_metadata)
-                        except Exception as err:
-                            LOGGER.error('Transformer Error: %s', err)
-                            LOGGER.error('Stream: %s, record: %s', stream_name, record)
-                            raise err
+                        with Transformer() as transformer:
+                            try:
+                                transformed_record = transformer.transform(
+                                    transform_data_record(record),
+                                    schema,
+                                    stream_metadata)
+                            except Exception as err:
+                                LOGGER.error('Transformer Error: %s', err)
+                                LOGGER.error('Stream: %s, record: %s', stream_name, record)
+                                raise err
 
-                        # Bookmarking
-                        bookmark_date = transformed_record.get(bookmark_field)
-                        bookmark_dttm = strptime_to_utc(bookmark_date)
-                        max_bookmark_dttm = strptime_to_utc(max_bookmark_value)
-                        if bookmark_dttm > max_bookmark_dttm:
-                            max_bookmark_value = strftime(bookmark_dttm)
+                            # Bookmarking
+                            bookmark_date = transformed_record.get(bookmark_field)
+                            bookmark_dttm = strptime_to_utc(bookmark_date)
+                            max_bookmark_dttm = strptime_to_utc(max_bookmark_value)
+                            if bookmark_dttm > max_bookmark_dttm:
+                                max_bookmark_value = strftime(bookmark_dttm)
 
-                        # Only sync records whose bookmark is after the last_datetime
-                        if bookmark_dttm >= last_dttm:
-                            write_record(stream_name, transformed_record, \
-                                time_extracted=time_extracted)
-                            counter.increment()
+                            # Only sync records whose bookmark is after the last_datetime
+                            if bookmark_dttm >= last_dttm:
+                                write_record(stream_name, transformed_record, \
+                                             time_extracted=time_extracted)
+                                counter.increment()
 
         # Youtube API does not allow page/batch sorting for playlist_items
         write_bookmark(state, stream_name, max_bookmark_value)
@@ -264,7 +264,6 @@ def sync_videos(client,
                 start_date,
                 channel_ids,
                 endpoint_config):
-
     stream_name = 'videos'
     stream = catalog.get_stream(stream_name)
     schema = stream.schema.to_dict()
@@ -282,7 +281,7 @@ def sync_videos(client,
     search_params = {
         'part': 'id,snippet',
         'channelId': '{channel_id}',
-        'order': 'date', # Descending date order
+        'order': 'date',  # Descending date order
         'type': 'video',
         'maxResults': 50
     }
@@ -334,23 +333,24 @@ def sync_videos(client,
                 time_extracted = utils.now()
 
                 for record in records:
-                    for key in id_fields:
-                        if not record.get(key):
-                            raise ValueError('Stream: {}, Missing key: {}'.format(stream_name, key))
+                    if record:
+                        for key in id_fields:
+                            if not record.get(key):
+                                raise ValueError('Stream: {}, Missing key: {}'.format(stream_name, key))
 
-                    with Transformer() as transformer:
-                        try:
-                            transformed_record = transformer.transform(
-                                transform_data_record(record),
-                                schema,
-                                stream_metadata)
-                        except Exception as err:
-                            LOGGER.error('Transformer Error: %s', err)
-                            LOGGER.error('Stream: %s, record: %s', stream_name, record)
-                            raise err
+                        with Transformer() as transformer:
+                            try:
+                                transformed_record = transformer.transform(
+                                    transform_data_record(record),
+                                    schema,
+                                    stream_metadata)
+                            except Exception as err:
+                                LOGGER.error('Transformer Error: %s', err)
+                                LOGGER.error('Stream: %s, record: %s', stream_name, record)
+                                raise err
 
-                        write_record(stream_name, transformed_record, time_extracted=time_extracted)
-                        counter.increment()
+                            write_record(stream_name, transformed_record, time_extracted=time_extracted)
+                            counter.increment()
 
         # Write bookmark after all records synced due to sort descending (most recent first)
         write_bookmark(state, stream_name, max_bookmark_value)
@@ -359,14 +359,12 @@ def sync_videos(client,
         return counter.value
 
 
-#pylint: disable=too-many-statements
 def sync_report(client,
                 catalog,
                 state,
                 start_date,
                 stream_name,
                 endpoint_config):
-
     stream = catalog.get_stream(stream_name)
     schema = stream.schema.to_dict()
     stream_metadata = metadata.to_map(stream.metadata)
@@ -406,8 +404,8 @@ def sync_report(client,
         # Check if job exists for stream
         job_exists = False
         for job in jobs:
-            job_name = job.get('name')
-            if job_name == stream_name:
+            job_report_type = job.get('reportTypeId')
+            if job_report_type == report_type:
                 job_exists = True
                 job_id = job.get('id')
                 break
@@ -418,14 +416,12 @@ def sync_report(client,
                 'name': stream_name,
                 'reportTypeId': report_type
             }
-            new_job = {}
             new_job = client.post(
                 url=REPORTING_URL,
                 path='jobs',
                 data=body,
                 endpoint='job_create'
             )
-            job_name = new_job.get('name')
             job_id = new_job.get('id')
 
         # Get reports for job_id created after bookmark last_datetime
@@ -524,7 +520,6 @@ def sync(client, config, catalog, state):
         update_currently_syncing(state, stream_name)
         write_schema(catalog, stream_name)
 
-        endpoint_config = {}
         total_records = 0
 
         if stream_name in STREAMS:

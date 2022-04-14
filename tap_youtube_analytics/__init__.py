@@ -20,8 +20,8 @@ REQUIRED_CONFIG_KEYS = [
     'user_agent'
 ]
 
-def do_discover(client):
 
+def do_discover(client):
     LOGGER.info('Starting discover')
     catalog = discover(client)
     json.dump(catalog.to_dict(), sys.stdout, indent=2)
@@ -30,7 +30,6 @@ def do_discover(client):
 
 @singer.utils.handle_top_exception(LOGGER)
 def main():
-
     parsed_args = singer.utils.parse_args(REQUIRED_CONFIG_KEYS)
 
     with GoogleClient(parsed_args.config['client_id'],
@@ -49,6 +48,7 @@ def main():
                  config=parsed_args.config,
                  catalog=parsed_args.catalog,
                  state=state)
+
 
 if __name__ == '__main__':
     main()
