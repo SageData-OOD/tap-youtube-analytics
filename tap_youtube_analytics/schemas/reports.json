@@ -111,24 +111,19 @@
       "type": ["null", "integer"]
     },
     "views_percentage": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "watch_time_minutes": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "red_watch_time_minutes": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "average_view_duration_seconds": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "average_view_duration_percentage": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "comments": {
       "type": ["null", "integer"]
@@ -173,8 +168,7 @@
       "type": ["null", "integer"]
     },
     "annotation_click_through_rate": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "annotation_closable_impressions": {
       "type": ["null", "integer"]
@@ -183,8 +177,7 @@
       "type": ["null", "integer"]
     },
     "annotation_close_rate": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "card_impressions": {
       "type": ["null", "integer"]
@@ -193,8 +186,7 @@
       "type": ["null", "integer"]
     },
     "card_click_rate": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "card_teaser_impressions": {
       "type": ["null", "integer"]
@@ -203,8 +195,7 @@
       "type": ["null", "integer"]
     },
     "card_teaser_click_rate": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "end_screen_element_impressions": {
       "type": ["null", "integer"]
@@ -213,52 +204,40 @@
       "type": ["null", "integer"]
     },
     "end_screen_element_click_rate": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "audience_retention_percentage": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "estimated_partner_revenue": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "estimated_partner_ad_revenue": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "estimated_partner_ad_auction_revenue": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "estimated_partner_ad_sense_revenue": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "estimated_partner_ad_reserved_revenue": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "estimated_partner_double_click_revenue": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "estimated_partner_red_revenue": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "estimated_partner_transaction_revenue": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "estimated_youtube_ad_revenue": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "estimated_cpm": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     },
     "ad_impressions": {
       "type": ["null", "integer"]
@@ -267,8 +246,7 @@
       "type": ["null", "integer"]
     },
     "estimated_playback_based_cpm": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-25
+      "type": ["null", "number"]
     }
   }
 }
