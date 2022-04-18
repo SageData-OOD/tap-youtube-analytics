@@ -462,6 +462,8 @@ def sync_report(client,
                                 transform_report_record(record, dimensions, report),
                                 schema,
                                 stream_metadata)
+                            transformed_record['report_name'] = stream_name
+                            transformed_record['report_type_id'] = report_type
                         except Exception as err:
                             LOGGER.error('Transformer Error: %s', err)
                             LOGGER.error('Stream: %s, record: %s', stream_name, record)
