@@ -209,47 +209,48 @@ def sync_playlist_items(client,
 
             # Loop playlists
             for playlist in playlists:
-                playlist_id = playlist.get('id')
-                params['playlistId'] = playlist_id
-                records = get_paginated_data(
-                    client=client,
-                    url=DATA_URL,
-                    path='playlistItems',
-                    endpoint=stream_name,
-                    params=params,
-                    data_key='items'
-                )
-                time_extracted = utils.now()
+                if playlist:
+                    playlist_id = playlist.get('id')
+                    params['playlistId'] = playlist_id
+                    records = get_paginated_data(
+                        client=client,
+                        url=DATA_URL,
+                        path='playlistItems',
+                        endpoint=stream_name,
+                        params=params,
+                        data_key='items'
+                    )
+                    time_extracted = utils.now()
 
-                for record in records:
-                    if record:
-                        for key in id_fields:
-                            if not record.get(key):
-                                raise ValueError('Stream: {}, Missing key: {}'.format(stream_name, key))
+                    for record in records:
+                        if record:
+                            for key in id_fields:
+                                if not record.get(key):
+                                    raise ValueError('Stream: {}, Missing key: {}'.format(stream_name, key))
 
-                        with Transformer() as transformer:
-                            try:
-                                transformed_record = transformer.transform(
-                                    transform_data_record(record),
-                                    schema,
-                                    stream_metadata)
-                            except Exception as err:
-                                LOGGER.error('Transformer Error: %s', err)
-                                LOGGER.error('Stream: %s, record: %s', stream_name, record)
-                                raise err
+                            with Transformer() as transformer:
+                                try:
+                                    transformed_record = transformer.transform(
+                                        transform_data_record(record),
+                                        schema,
+                                        stream_metadata)
+                                except Exception as err:
+                                    LOGGER.error('Transformer Error: %s', err)
+                                    LOGGER.error('Stream: %s, record: %s', stream_name, record)
+                                    raise err
 
-                            # Bookmarking
-                            bookmark_date = transformed_record.get(bookmark_field)
-                            bookmark_dttm = strptime_to_utc(bookmark_date)
-                            max_bookmark_dttm = strptime_to_utc(max_bookmark_value)
-                            if bookmark_dttm > max_bookmark_dttm:
-                                max_bookmark_value = strftime(bookmark_dttm)
+                                # Bookmarking
+                                bookmark_date = transformed_record.get(bookmark_field)
+                                bookmark_dttm = strptime_to_utc(bookmark_date)
+                                max_bookmark_dttm = strptime_to_utc(max_bookmark_value)
+                                if bookmark_dttm > max_bookmark_dttm:
+                                    max_bookmark_value = strftime(bookmark_dttm)
 
-                            # Only sync records whose bookmark is after the last_datetime
-                            if bookmark_dttm >= last_dttm:
-                                write_record(stream_name, transformed_record, \
-                                             time_extracted=time_extracted)
-                                counter.increment()
+                                # Only sync records whose bookmark is after the last_datetime
+                                if bookmark_dttm >= last_dttm:
+                                    write_record(stream_name, transformed_record, \
+                                                 time_extracted=time_extracted)
+                                    counter.increment()
 
         # Youtube API does not allow page/batch sorting for playlist_items
         write_bookmark(state, stream_name, max_bookmark_value)
@@ -302,18 +303,19 @@ def sync_videos(client,
 
             i = 0
             for search_record in search_records:
-                video_id = search_record.get('id', {}).get('videoId')
-                video_ids.append(video_id)
+                if search_record:
+                    video_id = search_record.get('id', {}).get('videoId')
+                    video_ids.append(video_id)
 
-                # Bookmarking
-                bookmark_date = search_record.get('snippet', {}).get('publishedAt')
-                bookmark_dttm = strptime_to_utc(bookmark_date)
-                if i == 0:
-                    max_bookmark_value = bookmark_date
-                # Stop looping when bookmark is before last datetime
-                if bookmark_dttm < last_dttm:
-                    break
-                i = i + 1
+                    # Bookmarking
+                    bookmark_date = search_record.get('snippet', {}).get('publishedAt')
+                    bookmark_dttm = strptime_to_utc(bookmark_date)
+                    if i == 0:
+                        max_bookmark_value = bookmark_date
+                    # Stop looping when bookmark is before last datetime
+                    if bookmark_dttm < last_dttm:
+                        break
+                    i = i + 1
 
             # Break into chunks of 50 video_ids
             video_id_chunks = chunks(video_ids, 50)
@@ -404,8 +406,7 @@ def sync_report(client,
         # Check if job exists for stream
         job_exists = False
         for job in jobs:
-            job_report_type = job.get('reportTypeId')
-            if job_report_type == report_type:
+            if job and job.get('reportTypeId') == report_type:
                 job_exists = True
                 job_id = job.get('id')
                 break
