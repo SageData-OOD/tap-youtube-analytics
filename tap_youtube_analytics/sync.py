@@ -12,8 +12,8 @@ REPORTING_URL = 'https://youtubereporting.googleapis.com/v1'
 DATA_URL = 'https://www.googleapis.com/youtube/v3'
 
 # YouTube provides daily estimated metrics at a 2-3 day lag
-# Attribution window set to 7 days to ensure last 7 days are re-synced daily
-ATTRIBUTION_DAYS = 7
+# Conversion window set to 7 days to ensure last 7 days are re-synced daily
+DEFAULT_CONVERSION_WINDOW = 14
 DATE_WINDOW_SIZE = 30
 
 
@@ -366,6 +366,7 @@ def sync_report(client,
                 state,
                 start_date,
                 stream_name,
+                config,
                 endpoint_config):
     stream = catalog.get_stream(stream_name)
     schema = stream.schema.to_dict()
@@ -377,7 +378,8 @@ def sync_report(client,
     # Initialize bookmarking
     # There is a 2-3 day lag (sometimes up to 6-7 days lag) in YouTube results reconcilliation
     now_dttm = utils.now()
-    attribution_start_dttm = now_dttm - timedelta(days=ATTRIBUTION_DAYS)
+    conversion_window = config.get("conversion_window", DEFAULT_CONVERSION_WINDOW)
+    attribution_start_dttm = now_dttm - timedelta(days=conversion_window)
     last_datetime = get_bookmark(state, stream_name, start_date)
     last_dttm = strptime_to_utc(last_datetime)
 
@@ -563,6 +565,7 @@ def sync(client, config, catalog, state):
                                         state=state,
                                         start_date=start_date,
                                         stream_name=stream_name,
+                                        config=config,
                                         endpoint_config=endpoint_config)
 
         LOGGER.info('FINISHED Syncing Stream: {}'.format(stream_name))
