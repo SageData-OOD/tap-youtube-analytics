@@ -53,8 +53,8 @@ def transform_report_record(record, dimensions, report):
         if key in dim_lookup_map:
             # lookup new_val, with a default for existing val (if not found)
             new_val = dim_lookup_map[key].get(val, val)
-            if val == new_val:
-                LOGGER.warning('dim_lookup_map value not found; key: {}, value: {}'.format(key, val))
+            # if val == new_val:
+            #     LOGGER.warning('dim_lookup_map value not found; key: {}, value: {}'.format(key, val))
             new_record[key] = new_val
         else:
             new_record[key] = val
