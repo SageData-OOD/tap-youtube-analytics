@@ -46,6 +46,7 @@ def get_schemas(client):
         endpoint=endpoint
     )
     report_types = report_type_data.get('reportTypes', [])
+    LOGGER.info("Available report types: %s", report_types)
 
     for report_type in report_types:
         # report_name = report id minus the version (last 3 chars)
