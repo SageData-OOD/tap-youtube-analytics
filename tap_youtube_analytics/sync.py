@@ -361,6 +361,18 @@ def sync_videos(client,
         return counter.value
 
 
+def get_start_time_at_or_after(create_time):
+    """
+    if you schedule a job on September 1, 2015,
+    then the report for September 1, 2015, will be ready on September 3, 2015.
+
+    The report for September 2, 2015, will be posted on September 4, 2015, and so forth.
+    ref: https://developers.google.com/youtube/reporting/v1/reports#step-3:-create-a-reporting-job
+    """
+    create_tm = strptime_to_utc(create_time)
+    return strftime(create_tm - timedelta(days=2))
+
+
 def sync_report(client,
                 catalog,
                 state,
@@ -430,7 +442,7 @@ def sync_report(client,
         # Get reports for job_id created after bookmark last_datetime
         report_params = {
             'createdAfter': last_datetime,
-            'startTimeAtOrAfter': start_date,
+            'startTimeAtOrAfter': get_start_time_at_or_after(last_datetime),
             'pageSize': 50
         }
         reports = get_paginated_data(
